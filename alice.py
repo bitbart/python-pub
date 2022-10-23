@@ -11,6 +11,9 @@ def gen():
 def enc(x,k):
     return  ''.join(map(chr, map(lambda n : ord('a')+(ord(n)-ord('a')+k)%26, x)))
 
+def dec(y,k):
+    return  ''.join(map(chr, map(lambda n : ord('a')+(ord(n)-ord('a')-k)%26, y)))
+
 def main(args):
     logging.basicConfig(format='%(message)s', filename='alice.log', level=logging.INFO)
     
@@ -33,6 +36,10 @@ def main(args):
 
     y = enc(args[b],k)
     logging.info("y = " + y)
+
+    print(y)
+    print(dec(y,k))
+    
     return (b,y)
     
 if __name__ == '__main__':
