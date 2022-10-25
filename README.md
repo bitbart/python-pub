@@ -12,4 +12,5 @@
 
 - [The strange case of Prof. Pinna](pinna-case.py)
 - [Socrates is mortal](socrates-is-mortal.py)
+- [Halloween at the Science Palace](halloween-science-palace.py)
 - [Halloween party](halloween-party.py)
