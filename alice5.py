@@ -40,7 +40,7 @@ def main(args):
         assert(c in ['0','1'])
 
     k = gen()
-    logging.info("k = " + str(k))
+    logging.info("k = " + ''.join(map(lambda b : str(b),k)))
     
     b = secrets.choice([0,1])
 

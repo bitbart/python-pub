@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from alice5 import *
-from mallory5 import *
+from alice6 import *
+from mallory6 import *
 import sys
 import logging
 
