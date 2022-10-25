@@ -7,7 +7,7 @@ import secrets
 import logging
 
 def main(args):
-    logging.basicConfig(format='%(message)s', filename='alice2.log', level=logging.INFO)
+    logging.basicConfig(format='%(message)s', filename='log', level=logging.INFO)
     
     if len(args) != 2:
         print("""\
@@ -17,17 +17,13 @@ def main(args):
         """)
         sys.exit(0)
 
-    logging.info("x0 = " + args[0])
-    logging.info("x1 = " + args[1])
-
     k = gen()
     logging.info("k = " + str(k))
     
     b = secrets.choice([0,1])
-    logging.info("b = " + str(b))
 
     y = enc(args[b],k)
-    logging.info("y = " + y)
+
     return (b,y)
     
 if __name__ == '__main__':

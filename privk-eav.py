@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from alice2 import *
-from mallory2 import *
+from alice4 import *
+from mallory4 import *
 import sys
 import logging
 
@@ -17,12 +17,17 @@ for i in range(N):
 
     # M -> A : x0, x1
     (x0,x1) = plaintexts()
-
+    logging.info("x0 = " + x0)
+    logging.info("x1 = " + x1)
+    
     # A -> M : y = Ek(x[b])
     (b,y) = main([x0,x1])
+    logging.info("b = " + str(b))   
+    logging.info("y = " + y)
 
-    # M : bm
+    # M : bm   
     bm = guess(y)
+    logging.info("bm = " + str(bm))
     
     if bm==b:
         logging.info("PrivK=1")

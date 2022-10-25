@@ -20,13 +20,14 @@ def enc(x,k):
     # print("k = " + str(k))
     y = []
     for i in range(len(k)):
-        y.append(chr(((ord(x[i])-ord('0'))^k[i])+ord('0')))
+        y.append(str(int(x[i]) ^ k[i]))
     y = ''.join(y)
     # print("y = " + y)
     return y
 
+
 def main(args):
-    logging.basicConfig(format='%(message)s', filename='alice3.log', level=logging.INFO)
+    logging.basicConfig(format='%(message)s', filename='log', level=logging.INFO)
 
     if len(args) != 2:
         print("""\
@@ -42,17 +43,13 @@ def main(args):
     for c in args[1]:
         assert(c in ['0','1'])
 
-    logging.info("x0 = " + args[0])
-    logging.info("x1 = " + args[1])
-
     k = gen(len(args[0]))
-    logging.info("k = " + str(k))
+    logging.info("k = " + ''.join(map(lambda b : str(b),k)))
 
     b = secrets.choice([0,1])
-    logging.info("b = " + str(b))
 
     y = enc(args[b],k)
-    logging.info("y = " + str(y))
+
     return (b,y)
 
 if __name__ == '__main__':
