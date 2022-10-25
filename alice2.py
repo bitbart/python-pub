@@ -1,20 +1,10 @@
 #!/usr/bin/env python
 
+from shift_unbal import *
+
 import sys
 import secrets
-import random
 import logging
-
-def gen():
-    a = secrets.choice([0,1])
-    if a==0:
-        k=25
-    else:
-        k = secrets.randbelow(25)
-    return k
-
-def enc(x,k):
-    return  ''.join(map(chr, map(lambda n : ord('a')+(ord(n)-ord('a')+k)%26, x)))
 
 def main(args):
     logging.basicConfig(format='%(message)s', filename='alice2.log', level=logging.INFO)
@@ -25,10 +15,6 @@ def main(args):
         chosen at random, and prints the ciphertext.
         Usage: alice x0 x1
         """)
-        sys.exit(0)
-
-    if len(args[0])>1 or len(args[1])>1:
-        print("Plaintexts must have length 1")
         sys.exit(0)
 
     logging.info("x0 = " + args[0])
