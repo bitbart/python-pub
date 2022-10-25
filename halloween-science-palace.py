@@ -41,8 +41,19 @@ s.add(f(Scateni)!=Zombie)
 s.add(ForAll([x,y],Implies(x!=y,f(x)!=f(y))))
 
 if s.check()==sat:
-    print(s.model())  
-      
+    m = s.model()
+    print(m)
+
+    c = []
+    for x in [Carta,DiFrancesco,Pinna,Scateni]:
+        # f(x)==m.evaluate(f(x))
+        c.append(f(x)==m.evaluate(f(x)))
+  
+    if s.check(Not(And(c)))==unsat:
+        print("This is the only model!")
+    else:
+        print("There are other models")        
+
 if s.check(Not(f(Pinna)==Dracula))==unsat:
     print("Prof. Pinna is Dracula")
 
