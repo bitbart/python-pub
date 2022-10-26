@@ -1,5 +1,5 @@
 """
-Mallory: adversary for ShiftECB
+Mallory1: adversary for ShiftECB
 """
 
 def plaintexts():

@@ -4,10 +4,10 @@ import sys
 import logging
 
 from cipher import *
-from mallory4 import *
+from mallory0 import *
 
-# Adv: Mallory
-# P = ShiftECB()
+# Adv: Mallory1
+P = ShiftECB()
 
 # Adv: Mallory2
 # P = Shift1Unbal()
@@ -16,7 +16,7 @@ from mallory4 import *
 # P = Vigenere2Unbal()
 
 # Adv = Mallory4
-P = OTPlastXor(3)
+# P = OTPlastXor(3)
 
 # Adv: Mallory5
 # P = TwoTP(4)
