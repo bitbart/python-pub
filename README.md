@@ -4,7 +4,8 @@
 
 - Private-key encryption schemes: [cipher.py](cipher.py)
 - PrivK experiment driver: [privk-eav.py](privk-eav.py)
-  - Adv for Shift cipher in ECB mode: [mallory.py](mallory.py)
+  - Adv randomly guessing: [mallory0.py](mallory0.py)
+  - Adv for Shift cipher in ECB mode: [mallory1.py](mallory1.py)
   - Adv for Shift cipher with unbalanced keys: [mallory2.py](mallory2.py)
   - Adv for Vigenère cipher with unbalanced keys: [mallory3.py](mallory3.py)
   - Adv for OTP with computed last bit: [mallory4.py](mallory4.py)
