@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Container class for priv-key ciphers
 
 import sys
@@ -12,7 +14,6 @@ def int_of_chr(n):
 def chr_of_int(n):
 	return chr(n + ord('a'))
 
-
 class Cipher(ABC):
 
 	@abstractmethod
@@ -26,7 +27,15 @@ class Cipher(ABC):
 	@abstractmethod
 	def dec(self,y,k):
 		pass
-    
+
+	@abstractmethod	
+	def string_of_key(self,k):
+		pass
+
+	@abstractmethod	
+	def key_of_string(self,s):
+		pass
+	
 	def exp(self,x0,x1):
 		k = self.gen()                         # generate key
 		logging.info("k = " + ''.join(str(k)))		
@@ -50,6 +59,12 @@ class ShiftECB(Cipher):
 	def dec(self,y,k):
 		return  ''.join(map(lambda n : chr_of_int((int_of_chr(n) - k)%26), y))
 
+	def string_of_key(self,k):
+		return chr_of_int(k)
+
+	def key_of_string(self,s):
+		return int_of_chr(s)
+	
 
 ## Shift cipher with non-uniform keys and plaintexts of length 1
 
@@ -156,6 +171,51 @@ class TwoTP(Cipher):
 		pass
 
 
+class OTP(Cipher):
+
+	def __init__(self, n):
+		self.n = n
+		
+	def gen(self):
+		k = []
+		for i in range(self.n):
+			k.append(secrets.choice([0,1]))
+		return k
+
+	def enc(self,x,k):
+		assert (len(x)==self.n), "Plaintext must have length " + str(self.n)
+		assert (len(x)==len(k)), "Plaintexts and key have different lengths"
+		assert (reduce(lambda z, b: z and b in ['0','1'], x, True)), "Plaintext not bitstring"
+	
+		y = []
+		for i in range(self.n):
+			y.append(str(int(x[i]) ^ k[i]))
+		y = ''.join(y)
+		return y
+
+	def dec(self,y,k):
+		assert (len(y)==self.n), "Ciphertext must have length " + str(self.n)
+		assert (len(y)==len(k)), "Ciphertext and key have different lengths"
+		assert (reduce(lambda z, b: z and b in ['0','1'], y, True)), "Ciphertext not bitstring"
+	
+		x = []
+		for i in range(self.n):
+			x.append(str(int(y[i]) ^ k[i]))
+		x = ''.join(x)
+		return x
+
+	def string_of_key(self,k):
+		s = ''.join(map (lambda ki : str(ki), k))
+		return s
+
+	def key_of_string(self,s):
+		# from string to list of chr
+		l = list(filter(lambda i : (i in s and i!="\n"), s))
+		# from list of chr to list of int
+		k = list(map(lambda ki : int(ki), l))
+		return k
+
+	
 ## Quasi-OTP
 
 class QuasiOTP(Cipher):
@@ -189,12 +249,90 @@ class QuasiOTP(Cipher):
 		pass
 
 
-def main(args):
-    logging.basicConfig(format='%(message)s', filename='log', level=logging.INFO)
-    P = Vigenere2Unbal()
-    (b,y) = P.exp("aa","ab")
-    print("b = " + str(b))
-    print("y = " + y)    
+def print_usage():
+    print("""\
+    Usage:
+    cipher scheme -gen n keyfile  generates a key of length n and writes it to keyfile
+    cipher scheme -enc keyfile x  encrypts plaintext x with key
+    cipher scheme -dec keyfile y  decrypts ciphertext y with key
+    cipher scheme -privk x0 x1    indistinguishability experiment on plaintexts x0,x1
+    
+    where scheme in [ShiftECB,OTP]
+    """)
 
+def get_n(args,op):
+	if op == "-gen":
+		n = int(args[2])
+		return n
+	elif op in ["-enc","-dec","-privk"]:
+		n = len(args[3])
+		return n
+	else:
+		print("Unsupported operation")
+
+def main(args):
+	logging.basicConfig(format='%(message)s', filename='log', level=logging.INFO)
+	if len(args) < 2:
+		print_usage()
+		sys.exit(0)
+
+	scheme = args[0]
+	op = args[1]
+	n = 0            # n=0 when the scheme has no security parameter
+	
+	if scheme == "ShiftECB":
+		P = ShiftECB()
+	elif scheme == "OTP":
+		n = get_n(args,op)
+		print("n = " + str(n))
+		P = OTP(n)
+	else:
+		print("Unsupported encryption scheme")
+		sys.exit(0)
+
+	### Generate key
+	if op == "-gen":
+		k = P.gen()
+		if n==0:
+			keyfile = args[2]
+		else:
+			keyfile = args[3]
+
+		with open(keyfile, 'w') as f:
+			s = P.string_of_key(k)
+			f.write(s)
+			print("k = " + s)
+
+	### Encrypt
+	elif op == "-enc":
+		keyfile = args[2]
+		x = args[3]
+		# print("Encrypting " + x + " with key in " + keyfile + "...")
+		with open(keyfile, 'r') as f:
+			k = P.key_of_string(f.read())
+			y = P.enc(x,k)
+			print(y)
+
+	### Decrypt
+	elif op == "-dec":
+		keyfile = args[2]
+		y = args[3]	
+		# print("Decrypting " + y + " with key in " + keyfile + "...")
+		with open(keyfile, 'r') as f:
+			k = P.key_of_string(f.read())
+			x = P.dec(y,k)
+			print(x)
+
+	### Indistinguishability experiment
+	elif op == "-privk":
+		x0 = args[2]
+		x1 = args[3]
+		(b,y) = P.exp(x0,x1)
+		print("b = " + str(b))
+		print("y = " + y)    
+
+	else:
+		print("Unsupported operation " + op)
+		
 if __name__ == '__main__':
     main(sys.argv[1:])
