@@ -1,3 +1,7 @@
+"""
+Mallory: adversary for ShiftECB
+"""
+
 def plaintexts():
     return ("aa","ab")
 

@@ -1,3 +1,7 @@
+"""
+Mallory4: adversary for OTPlastXor
+"""
+
 def plaintexts():
     return ("000","001")
 

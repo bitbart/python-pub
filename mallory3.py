@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+"""
+Mallory3: adversary for Vigenere2Unbal
+"""
 
 def plaintexts():
     return ("aa","ab")

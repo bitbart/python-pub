@@ -1,3 +1,7 @@
+"""
+Mallory2: adversary for Shift1Unbal
+"""
+
 def plaintexts():
     return ('a','b')
 

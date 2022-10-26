@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+"""
+Mallory6: adversary for QuasiOTP
+"""
 
 def plaintexts():
-    return ("00000","11111")
+    return ("0000","1111")
 
 def guess(y):
     allZ = True          # allZ=True iff all bits in ciphertext are 0

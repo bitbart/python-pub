@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+"""
+Mallory5: adversary for TwoTP
+"""
 
 def plaintexts():
     return ("0000","0010")

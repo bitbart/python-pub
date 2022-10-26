@@ -1,9 +1,28 @@
 #!/usr/bin/env python
 
-from alice6 import *
-from mallory6 import *
 import sys
 import logging
+
+from cipher import *
+from mallory4 import *
+
+# Adv: Mallory
+# P = ShiftECB()
+
+# Adv: Mallory2
+# P = Shift1Unbal()
+
+# Adv: Mallory3
+# P = Vigenere2Unbal()
+
+# Adv = Mallory4
+P = OTPlastXor(3)
+
+# Adv: Mallory5
+# P = TwoTP(4)
+
+# Adv: Mallory6
+# P = QuasiOTP(4)
 
 assert (len(sys.argv)==2 and int(sys.argv[1])>0),"Usage: privk-eav n_experiments"
 
@@ -19,9 +38,9 @@ for i in range(N):
     (x0,x1) = plaintexts()
     logging.info("x0 = " + x0)
     logging.info("x1 = " + x1)
-    
+
     # A -> M : y = Ek(x[b])
-    (b,y) = main([x0,x1])
+    (b,y) = P.exp(x0,x1)
     logging.info("b = " + str(b))   
     logging.info("y = " + y)
 
@@ -30,9 +49,9 @@ for i in range(N):
     logging.info("bm = " + str(bm))
     
     if bm==b:
-        logging.info("PrivK=1")
+        logging.info("PrivK = 1 (Mallory wins)")
         S = S+1
     else:
-        logging.info("PrivK=0")
+        logging.info("PrivK = 0 (Mallory loses)")
 
 print("Percentage of success: " + str(S*100./N))
