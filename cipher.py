@@ -43,6 +43,27 @@ class Cipher(ABC):
 		y = self.enc(x1 if b else x0,k)        # encrypt xb = x0 if b=0, x1 if b=1
 		return (b,y)
 
+
+## Uncipher
+
+class Uncipher(Cipher):
+
+	def gen(self):
+		k = secrets.randbelow(26)
+		return k
+
+	def enc(self,x,k):
+		return  x
+
+	def dec(self,y,k):
+		return  y
+
+	def string_of_key(self,k):
+		return chr_of_int(k)
+
+	def key_of_string(self,s):
+		return int_of_chr(s)
+
 	
 ## Shift cipher in ECB mode with uniform keys and plaintexts of arbitrary length
 
@@ -249,6 +270,10 @@ class QuasiOTP(Cipher):
 		pass
 
 
+################################################################################
+# Frontend
+################################################################################
+
 def print_usage():
     print("""\
     Usage:
@@ -257,7 +282,7 @@ def print_usage():
     cipher scheme -dec keyfile y  decrypts ciphertext y with key
     cipher scheme -privk x0 x1    indistinguishability experiment on plaintexts x0,x1
     
-    where scheme in [ShiftECB,OTP]
+    where scheme in [Uncipher,ShiftECB,OTP]
     """)
 
 def get_n(args,op):
@@ -280,7 +305,9 @@ def main(args):
 	op = args[1]
 	n = 0            # n=0 when the scheme has no security parameter
 	
-	if scheme == "ShiftECB":
+	if scheme == "Uncipher":
+		P = Uncipher()
+	elif scheme == "ShiftECB":
 		P = ShiftECB()
 	elif scheme == "OTP":
 		n = get_n(args,op)
