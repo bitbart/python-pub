@@ -4,25 +4,29 @@ import sys
 import logging
 
 from cipher import *
-from mallory0 import *
 
-# Adv: Mallory1
-P = ShiftECB()
+from mallory7 import *
 
-# Adv: Mallory2
+# Adv: mallory1
+# P = ShiftECB()
+
+# Adv: mallory2
 # P = Shift1Unbal()
 
-# Adv: Mallory3
+# Adv: mallory7
+# P = ShiftLazyOTP(5)
+
+# Adv: mallory3
 # P = Vigenere2Unbal()
 
-# Adv = Mallory4
-# P = OTPlastXor(3)
-
-# Adv: Mallory5
+# Adv: mallory5
 # P = TwoTP(4)
 
-# Adv: Mallory6
+# Adv: mallory6
 # P = QuasiOTP(4)
+
+# Adv = mallory4
+# P = OTPlastXor(3)
 
 assert (len(sys.argv)==2 and int(sys.argv[1])>0),"Usage: privk-eav n_experiments"
 
