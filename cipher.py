@@ -44,7 +44,9 @@ class Cipher(ABC):
 		return (b,y)
 
 
+################################################################################
 ## Uncipher
+################################################################################
 
 class Uncipher(Cipher):
 
@@ -64,8 +66,10 @@ class Uncipher(Cipher):
 	def key_of_string(self,s):
 		return int_of_chr(s)
 
-	
+
+################################################################################
 ## Shift cipher in ECB mode with uniform keys and plaintexts of arbitrary length
+################################################################################
 
 class ShiftECB(Cipher):
 
@@ -87,8 +91,10 @@ class ShiftECB(Cipher):
 		return int_of_chr(s)
 	
 
+################################################################################
 ## Shift cipher with non-uniform keys and plaintexts of length 1
-
+################################################################################
+	
 class Shift1Unbal(Cipher):
 
     def gen(self):
@@ -108,7 +114,55 @@ class Shift1Unbal(Cipher):
         return  ''.join(map(lambda n : chr_of_int((int_of_chr(n) - k)%26), y))
 
 
+################################################################################
+## Shift cipher in OTP mode for the first n chars, then uncipher
+################################################################################
+
+class ShiftLazyOTP(Cipher):
+	def __init__(self, n):
+		assert(n>0),"n must be greater than 0"
+		self.n = n
+
+	def gen(self):
+		k = []
+		for i in range(self.n):
+			k.append(secrets.randbelow(26))
+		return k
+
+	def enc(self,x,k):
+		d = len(x) - len(k)
+		if d>0:   # padding
+			k = k + [0] * d
+		y = []
+		for i in range(len(x)):
+			y.append(chr_of_int((int_of_chr(x[i]) + k[i])%26))
+		y = ''.join(y)
+		return y
+			
+	def dec(self,y,k):
+		d = len(y) - len(k)
+		if d>0:   # padding
+			k = k + [0] * d
+		x = []
+		for i in range(len(y)):
+			x.append(chr_of_int((int_of_chr(y[i]) - k[i])%26))
+		x = ''.join(x)
+		return x
+
+	def string_of_key(self,k):
+		s = ''.join(map (lambda ki : chr_of_int(ki), k))
+		return s
+
+	def key_of_string(self,s):
+		# from string to list of int
+		l = list(filter(lambda i : (i in s and i!="\n"), s))
+		k = list(map(lambda ki : int_of_chr(ki), l))
+		return k
+	
+	
+################################################################################
 ## Vigenere cipher with non-uniform keys and plaintexts of length 2
+################################################################################
 
 class Vigenere2Unbal(Cipher):
 	def gen(self):
@@ -130,7 +184,9 @@ class Vigenere2Unbal(Cipher):
 		pass
 
 
-## OTP where the last bit of the key if the XOR of the previous bits
+################################################################################
+## OTPlastXor: OTP where the last bit of the key if the XOR of the previous bits
+################################################################################
 
 class OTPlastXor(Cipher):
 
@@ -160,9 +216,11 @@ class OTPlastXor(Cipher):
 	def dec(self,y,k):
 		pass
 
-	
-## TwoTP: two-time pad
 
+################################################################################
+## TwoTP (two-time pad)
+################################################################################
+	
 class TwoTP(Cipher):
 
 	def __init__(self, n):
@@ -192,6 +250,10 @@ class TwoTP(Cipher):
 		pass
 
 
+################################################################################
+## OTP
+################################################################################
+	
 class OTP(Cipher):
 
 	def __init__(self, n):
@@ -236,9 +298,11 @@ class OTP(Cipher):
 		k = list(map(lambda ki : int(ki), l))
 		return k
 
-	
-## Quasi-OTP
 
+################################################################################
+## Quasi-OTP
+################################################################################
+	
 class QuasiOTP(Cipher):
 
 	def __init__(self, n):
@@ -271,7 +335,7 @@ class QuasiOTP(Cipher):
 
 
 ################################################################################
-# Frontend
+## Frontend
 ################################################################################
 
 def print_usage():
@@ -282,7 +346,7 @@ def print_usage():
     cipher scheme -dec keyfile y  decrypts ciphertext y with key
     cipher scheme -privk x0 x1    indistinguishability experiment on plaintexts x0,x1
     
-    where scheme in [Uncipher,ShiftECB,OTP]
+    where scheme in [Uncipher,ShiftECB,ShiftLazyOTP,OTP]
     """)
 
 def get_n(args,op):
@@ -309,9 +373,13 @@ def main(args):
 		P = Uncipher()
 	elif scheme == "ShiftECB":
 		P = ShiftECB()
+	elif scheme == "ShiftLazyOTP":
+		n = get_n(args,op)
+		# print("n = " + str(n))
+		P = ShiftLazyOTP(n)	
 	elif scheme == "OTP":
 		n = get_n(args,op)
-		print("n = " + str(n))
+		# print("n = " + str(n))
 		P = OTP(n)
 	else:
 		print("Unsupported encryption scheme")
