@@ -55,10 +55,10 @@ class Uncipher(Cipher):
 		return k
 
 	def enc(self,x,k):
-		return  x
+		return x
 
 	def dec(self,y,k):
-		return  y
+		return y
 
 	def string_of_key(self,k):
 		return chr_of_int(k)
@@ -75,10 +75,10 @@ class ShiftECB(Cipher):
 
 	def gen(self):
 		k = secrets.randbelow(26)
-		# print("k = " + str(k))
 		return k
 
 	def enc(self,x,k):
+		# Ek(x1 x2 x3 ... xn,k) = (x1+k)%26 (x2+k)%26 (x3+k)%26 ... (xn+k)%26
 		return  ''.join(map(lambda n : chr_of_int((int_of_chr(n) + k)%26), x))
 
 	def dec(self,y,k):
@@ -97,23 +97,29 @@ class ShiftECB(Cipher):
 	
 class Shift1Unbal(Cipher):
 
-    def gen(self):
-        a = secrets.choice([0,1])
-        if a==0:
-            k=25
-        else:
-            k = secrets.randbelow(25)
-        return k
+	def gen(self):
+		a = secrets.choice([0,1])
+		if a==0:
+			k=25
+		else:
+			k = secrets.randbelow(25)
+		return k
 
-    def enc(self,x,k):
-        assert(len(x)==1),"Plaintext must have length 1"
-        return  ''.join(map(lambda n : chr_of_int((int_of_chr(n) + k)%26), x))
+	def enc(self,x,k):
+		assert(len(x)==1),"Plaintext must have length 1"
+		return  ''.join(map(lambda n : chr_of_int((int_of_chr(n) + k)%26), x))
 
-    def dec(self,y,k):
-        assert(len(x)==1),"Ciphertext must have length 1"    
-        return  ''.join(map(lambda n : chr_of_int((int_of_chr(n) - k)%26), y))
+	def dec(self,y,k):
+		assert(len(x)==1),"Ciphertext must have length 1"    
+		return  ''.join(map(lambda n : chr_of_int((int_of_chr(n) - k)%26), y))
 
+	def string_of_key(self,k):
+		return chr_of_int(k)
 
+	def key_of_string(self,s):
+		return int_of_chr(s)
+
+	
 ################################################################################
 ## Shift cipher in OTP mode for the first n chars, then uncipher
 ################################################################################
@@ -181,73 +187,21 @@ class Vigenere2Unbal(Cipher):
 		return y0+y1
 
 	def dec(self,y,k):
-		pass
+		assert(len(y)==2 and len(k)==2)
+		x0 = ''.join(map(lambda n : chr_of_int((int_of_chr(n) - k[0])%26), y[0]))
+		x1 = ''.join(map(lambda n : chr_of_int((int_of_chr(n) - k[1])%26), y[1]))
+		return x0+x1
 
 
-################################################################################
-## OTPlastXor: OTP where the last bit of the key if the XOR of the previous bits
-################################################################################
+	def string_of_key(self,k):
+		s = ''.join(map (lambda ki : chr_of_int(ki), k))
+		return s
 
-class OTPlastXor(Cipher):
-
-	def __init__(self, n):
-		assert(n>0),"n must be greater than 0"
-		self.n = n
-	
-	def gen(self):
-		k = []
-		for i in range(self.n-1):
-			k.append(secrets.choice([0,1]))
-
-		lb = reduce(lambda z, y: z ^ y, k, 0)
-		k.append(lb)
+	def key_of_string(self,s):
+		# from string to list of int
+		l = list(filter(lambda i : (i in s and i!="\n"), s))
+		k = list(map(lambda ki : int_of_chr(ki), l))
 		return k
-
-	def enc(self,x,k):
-		assert (len(x)==self.n), "Plaintext must have length " + str(self.n)
-		assert (len(x)==len(k)), "Plaintexts and key have different lengths"
-		assert (reduce(lambda z, y: z and y in ['0','1'], x,True)), "Plaintext not bitstring"
-		y = []
-		for i in range(len(k)):
-			y.append(str(int(x[i]) ^ k[i]))
-		y = ''.join(y)
-		return y
-
-	def dec(self,y,k):
-		pass
-
-
-################################################################################
-## TwoTP (two-time pad)
-################################################################################
-	
-class TwoTP(Cipher):
-
-	def __init__(self, n):
-		assert(n%2==0),"n must be even"
-		self.n = n
-
-	def gen(self):
-		k = []
-		for i in range(int(self.n/2)):
-			k.append(secrets.choice([0,1]))
-		k = k + k
-		return k
-
-	def enc(self,x,k):
-		assert (len(x)==self.n), "Plaintext must have length " + str(self.n)
-		assert (len(x)==len(k)), "Plaintexts and key have different lengths"
-		assert (reduce(lambda z, y: z and y in ['0','1'], x,True)), "Plaintext not bitstring"
-		
-		y = []
-		for i in range(self.n):
-			# y[i] = x[i] ^ k[i]
-			y.append(str(int(x[i]) ^ k[i]))
-		y = ''.join(y)
-		return y
-
-	def dec(self,y,k):
-		pass
 
 
 ################################################################################
@@ -270,10 +224,7 @@ class OTP(Cipher):
 		assert (len(x)==len(k)), "Plaintexts and key have different lengths"
 		assert (reduce(lambda z, b: z and b in ['0','1'], x, True)), "Plaintext not bitstring"
 	
-		y = []
-		for i in range(self.n):
-			y.append(str(int(x[i]) ^ k[i]))
-		y = ''.join(y)
+		y = reduce( lambda s, z : s + z, map( lambda xi, ki : str(int(xi) ^ ki), x, k), "")
 		return y
 
 	def dec(self,y,k):
@@ -281,10 +232,7 @@ class OTP(Cipher):
 		assert (len(y)==len(k)), "Ciphertext and key have different lengths"
 		assert (reduce(lambda z, b: z and b in ['0','1'], y, True)), "Ciphertext not bitstring"
 	
-		x = []
-		for i in range(self.n):
-			x.append(str(int(y[i]) ^ k[i]))
-		x = ''.join(x)
+		x = reduce( lambda s, z : s + z, map( lambda yi, ki : str(int(yi) ^ ki), y, k), "")		
 		return x
 
 	def string_of_key(self,k):
@@ -300,10 +248,48 @@ class OTP(Cipher):
 
 
 ################################################################################
+## OTPlastXor: OTP where the last bit of the key if the XOR of the previous bits
+################################################################################
+
+class OTPlastXor(OTP):
+
+	def __init__(self, n):
+		assert(n>0),"n must be greater than 0"
+		self.n = n
+	
+	def gen(self):
+		k = []
+		for i in range(self.n-1):
+			k.append(secrets.choice([0,1]))
+
+		lb = reduce(lambda z, y: z ^ y, k, 0)
+		k.append(lb)
+		return k
+
+	
+################################################################################
+## TwoTP (two-time pad)
+################################################################################
+	
+class TwoTP(OTP):
+
+	def __init__(self, n):
+		assert(n%2==0),"TwoTP: n must be even"
+		self.n = n
+
+	def gen(self):
+		k = []
+		for i in range(int(self.n/2)):
+			k.append(secrets.choice([0,1]))
+		k = k + k
+		return k
+
+	
+################################################################################
 ## Quasi-OTP
 ################################################################################
 	
-class QuasiOTP(Cipher):
+class QuasiOTP(OTP):
 
 	def __init__(self, n):
 		self.n = n
@@ -319,20 +305,6 @@ class QuasiOTP(Cipher):
 					found=True
 		return k
 
-	def enc(self,x,k):
-		assert (len(x)==self.n), "Plaintext must have length " + str(self.n)
-		assert (len(x)==len(k)), "Plaintexts and key have different lengths"
-		assert (reduce(lambda z, y: z and y in ['0','1'], x,True)), "Plaintext not bitstring"
-	
-		y = []
-		for i in range(self.n):
-			y.append(str(int(x[i]) ^ k[i]))
-		y = ''.join(y)
-		return y
-
-	def dec(self,y,k):
-		pass
-
 
 ################################################################################
 ## Frontend
@@ -341,18 +313,22 @@ class QuasiOTP(Cipher):
 def print_usage():
     print("""\
     Usage:
-    cipher scheme -gen n keyfile  generates a key of length n and writes it to keyfile
-    cipher scheme -enc keyfile x  encrypts plaintext x with key
-    cipher scheme -dec keyfile y  decrypts ciphertext y with key
-    cipher scheme -privk x0 x1    indistinguishability experiment on plaintexts x0,x1
+    cipher scheme -gen [n] keyfile  generates a key of length n and writes it to keyfile
+    cipher scheme -enc keyfile x    encrypts plaintext x with key
+    cipher scheme -dec keyfile y    decrypts ciphertext y with key
+    cipher scheme -privk x0 x1      indistinguishability experiment on plaintexts x0,x1
     
-    where scheme in [Uncipher,ShiftECB,ShiftLazyOTP,OTP]
+    where scheme in [Uncipher,ShiftECB,ShiftLazyOTP,Vigenere2Unbal,OTP,TwoTP,OTPlastXor,QuasiOTP]
     """)
 
 def get_n(args,op):
 	if op == "-gen":
-		n = int(args[2])
-		return n
+		try:
+			n = int(args[2])
+			return n
+		except ValueError:
+			print_usage()
+			sys.exit(0)
 	elif op in ["-enc","-dec","-privk"]:
 		n = len(args[3])
 		return n
@@ -376,11 +352,22 @@ def main(args):
 	elif scheme == "ShiftLazyOTP":
 		n = get_n(args,op)
 		# print("n = " + str(n))
-		P = ShiftLazyOTP(n)	
+		P = ShiftLazyOTP(n)
+	elif scheme == "Vigenere2Unbal":
+		P = Vigenere2Unbal()
 	elif scheme == "OTP":
 		n = get_n(args,op)
 		# print("n = " + str(n))
 		P = OTP(n)
+	elif scheme == "TwoTP":
+		n = get_n(args,op)
+		P = TwoTP(n)
+	elif scheme == "OTPlastXor":
+		n = get_n(args,op)
+		P = OTPlastXor(n)
+	elif scheme == "QuasiOTP":
+		n = get_n(args,op)
+		P = QuasiOTP(n)
 	else:
 		print("Unsupported encryption scheme")
 		sys.exit(0)

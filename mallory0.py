@@ -5,8 +5,15 @@ Mallory0: random guess
 import random
 
 def plaintexts():
-	return ("aa","ab")
+	return ("a","b")
+
+# E_25(a) = "z"
 
 def guess(y):
-	bm = random.randint(0,1)
+	if y=='z':
+		bm = 0
+	else:
+		bm = 1
+		
+	# bm = random.randint(0,1)
 	return bm
