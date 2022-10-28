@@ -337,7 +337,8 @@ def get_n(args,op):
 
 def main(args):
 	logging.basicConfig(format='%(message)s', filename='log', level=logging.INFO)
-	if len(args) < 2:
+	
+	if len(args) < 3:
 		print_usage()
 		sys.exit(0)
 
@@ -378,7 +379,11 @@ def main(args):
 		if n==0:
 			keyfile = args[2]
 		else:
-			keyfile = args[3]
+			try: 
+				keyfile = args[3]
+			except IndexError:
+				print_usage()
+				exit(0)
 
 		with open(keyfile, 'w') as f:
 			s = P.string_of_key(k)
@@ -388,30 +393,43 @@ def main(args):
 	### Encrypt
 	elif op == "-enc":
 		keyfile = args[2]
-		x = args[3]
-		# print("Encrypting " + x + " with key in " + keyfile + "...")
-		with open(keyfile, 'r') as f:
-			k = P.key_of_string(f.read())
-			y = P.enc(x,k)
-			print(y)
+		try:
+			x = args[3]
+			# print("Encrypting " + x + " with key in " + keyfile + "...")
+			with open(keyfile, 'r') as f:
+				k = P.key_of_string(f.read())
+				y = P.enc(x,k)
+				print(y)
+		except IndexError:
+			print_usage()
+			exit(0)
+				
 
 	### Decrypt
 	elif op == "-dec":
 		keyfile = args[2]
-		y = args[3]	
-		# print("Decrypting " + y + " with key in " + keyfile + "...")
-		with open(keyfile, 'r') as f:
-			k = P.key_of_string(f.read())
-			x = P.dec(y,k)
-			print(x)
+		try:
+			y = args[3]	
+			# print("Decrypting " + y + " with key in " + keyfile + "...")
+			with open(keyfile, 'r') as f:
+				k = P.key_of_string(f.read())
+				x = P.dec(y,k)
+				print(x)
+		except IndexError:
+			print_usage()
+			exit(0)
 
 	### Indistinguishability experiment
 	elif op == "-privk":
-		x0 = args[2]
-		x1 = args[3]
-		(b,y) = P.exp(x0,x1)
-		print("b = " + str(b))
-		print("y = " + y)    
+		try:
+			x0 = args[2]
+			x1 = args[3]
+			(b,y) = P.exp(x0,x1)
+			print("b = " + str(b))
+			print("y = " + y)    
+		except IndexError:
+			print_usage()
+			exit(0)
 
 	else:
 		print("Unsupported operation " + op)

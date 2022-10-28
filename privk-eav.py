@@ -5,7 +5,7 @@ import logging
 
 from cipher import *
 
-from mallory5 import *
+from mallory6 import *
 
 # Adv: mallory1
 # P = ShiftECB()
@@ -23,7 +23,7 @@ from mallory5 import *
 P = TwoTP(4)
 
 # Adv: mallory6
-# P = QuasiOTP(4)
+P = QuasiOTP(4)
 
 # Adv = mallory4
 # P = OTPlastXor(3)
