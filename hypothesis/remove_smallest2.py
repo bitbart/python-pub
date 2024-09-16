@@ -1,4 +1,4 @@
-# pytest remove_smallest1.py
+# pytest remove_smallest2.py
 
 from hypothesis import given, assume
 from hypothesis.strategies import *
