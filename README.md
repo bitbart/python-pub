@@ -9,7 +9,7 @@
 
 ## Property-based testing
 
-- Remove least element from a list: [1](hypothesis/remove_least1.py), [2](hypothesis/remove_least2.py), [3](hypothesis/remove_least3.py), [4](hypothesis/remove_least4.py), [5](hypothesis/remove_least5.py), [6](hypothesis/remove_least6.py)
+- Remove least element from a list: [1](hypothesis/remove_smallest1.py), [2](hypothesis/remove_smallest2.py), [3](hypothesis/remove_smallest3.py), [4](hypothesis/remove_smallest4.py), [5](hypothesis/remove_smallest5.py), [6](hypothesis/remove_smallest6.py)
 - [Maximum of 3 numbers](hypothesis/max3.py)
 - [Dictionary](hypothesis/dict.py)
 - [Hash table](hypothesis/hash.py)
