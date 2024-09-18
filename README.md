@@ -7,7 +7,7 @@
 - [Halloween at the Science Palace](z3/halloween-science-palace.py)
 - [Halloween party](z3/halloween-party.py)
 
-## Property-based testing
+## Property-based testing with Hypothesis
 
 - Remove least element from a list: [1](hypothesis/remove_smallest1.py), [2](hypothesis/remove_smallest2.py), [3](hypothesis/remove_smallest3.py), [4](hypothesis/remove_smallest4.py), [5](hypothesis/remove_smallest5.py), [6](hypothesis/remove_smallest6.py)
 - [Maximum of 3 numbers](hypothesis/max3.py)
