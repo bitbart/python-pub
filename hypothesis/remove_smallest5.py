@@ -1,6 +1,6 @@
 # pytest remove_smallest5.py
 
-from hypothesis import given, assume
+from hypothesis import given, assume, settings
 from hypothesis.strategies import *
 from typing import List
 
@@ -32,6 +32,7 @@ def test_unit2():
     assert l == []
 
 @given(lists(integers()))
+@settings(max_examples=10000)
 def test_remove_smallest(l):
     assume (len(l) > 0)
     smallest = min(l)
