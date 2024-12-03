@@ -6,6 +6,7 @@
 - [Socrates is mortal](z3/socrates-is-mortal.py)
 - [Halloween at the Science Palace](z3/halloween-science-palace.py)
 - [Halloween party](z3/halloween-party.py)
+- [The Chef and the 3 measuring cups](z3/chef.ml)
 
 ## Property-based testing with Hypothesis
 
